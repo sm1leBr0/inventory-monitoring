@@ -60,8 +60,6 @@ exports.getAllEquipment = async (req, res) => {
       user,
       sortField = "id",
       sortOrder = "ASC",
-      page = 1,
-      limit = 10,
     } = req.query;
 
     let whereClause = {};
@@ -78,24 +76,13 @@ exports.getAllEquipment = async (req, res) => {
       whereClause.user = { [Op.like]: `%${user}%` };
     }
 
-    const offset = (page - 1) * limit;
-
     const equipment = await Equipment.findAll({
       where: whereClause,
       order: [[sortField, sortOrder]],
-      limit: parseInt(limit),
-      offset: parseInt(offset),
     });
-
-    const totalCount = await Equipment.count({ where: whereClause });
 
     res.status(200).json({
       data: equipment,
-      pagination: {
-        totalCount,
-        totalPages: Math.ceil(totalCount / limit),
-        currentPage: parseInt(page),
-      },
     });
   } catch (error) {
     res
@@ -121,14 +108,26 @@ exports.getEquipmentById = async (req, res) => {
 
 exports.createEquipment = async (req, res) => {
   try {
+    const { name, inventoryNumber, location, user, serialNumber } = req.body;
+
+    // Validate required fields
+    if (!name || !inventoryNumber || !location || !user || !serialNumber) {
+      return res.status(400).json({ error: "Missing required fields" });
+    }
+
+    // Create new equipment
     const newEquipment = await Equipment.create(req.body);
+
+    // Create initial version record
     await EquipmentVersion.create({
       equipmentId: newEquipment.id,
       version: 1,
       data: req.body,
     });
+
     res.status(201).json(newEquipment);
   } catch (error) {
+    console.error("Error creating equipment:", error.message, error.stack); // Detailed logging
     res
       .status(500)
       .json({ error: "An error occurred while creating equipment" });

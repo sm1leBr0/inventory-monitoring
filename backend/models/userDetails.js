@@ -3,6 +3,7 @@ module.exports = (sequelize, DataTypes) => {
     fullName: {
       type: DataTypes.STRING,
       allowNull: false,
+      unique: true,
     },
     office: {
       type: DataTypes.STRING,
@@ -17,6 +18,13 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
     },
   });
+
+  UserDetails.associate = (models) => {
+    UserDetails.hasMany(models.Equipment, {
+      foreignKey: "user",
+      sourceKey: "fullName",
+    });
+  };
 
   return UserDetails;
 };

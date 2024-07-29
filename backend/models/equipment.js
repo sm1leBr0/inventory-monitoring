@@ -28,5 +28,20 @@ module.exports = (sequelize, DataTypes) => {
     },
   });
 
+  Equipment.associate = (models) => {
+    Equipment.belongsTo(models.EquipmentCard, {
+      foreignKey: "name",
+      targetKey: "name",
+    });
+    Equipment.hasMany(models.EquipmentVersion, {
+      foreignKey: "equipmentId",
+      sourceKey: "inventoryNumber",
+    });
+    Equipment.belongsTo(models.UserDetails, {
+      foreignKey: "user",
+      targetKey: "fullName",
+    });
+  };
+
   return Equipment;
 };

@@ -1,6 +1,7 @@
 const express = require("express");
 const http = require("http");
 const socketIo = require("socket.io");
+const cors = require("cors");
 const db = require("./models/initModels");
 const equipmentRoutes = require("./routes/equipmentRoutes");
 const userRoutes = require("./routes/userRoutes");
@@ -12,6 +13,7 @@ const server = http.createServer(app);
 const io = socketIo(server);
 
 // Middleware
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 // Routes

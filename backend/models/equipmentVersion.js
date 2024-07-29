@@ -1,7 +1,7 @@
 module.exports = (sequelize, DataTypes) => {
   const EquipmentVersion = sequelize.define("EquipmentVersion", {
     equipmentId: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.STRING,
       allowNull: false,
     },
     version: {
@@ -17,6 +17,13 @@ module.exports = (sequelize, DataTypes) => {
       defaultValue: DataTypes.NOW,
     },
   });
+
+  EquipmentVersion.associate = (models) => {
+    EquipmentVersion.belongsTo(models.Equipment, {
+      foreignKey: "equipmentId",
+      targetKey: "inventoryNumber",
+    });
+  };
 
   return EquipmentVersion;
 };
